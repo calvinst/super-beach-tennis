@@ -8,6 +8,7 @@ export default function TorneioPage() {
   const torneio = useTorneioStore((s) => s.torneio);
   const registrarResultado = useTorneioStore((s) => s.registrarResultado);
   const resetarTorneio = useTorneioStore((s) => s.resetarTorneio);
+  const finalizarTorneio = useTorneioStore((s) => s.finalizarTorneio);
 
   if (!torneio) navigate("/config");
 
@@ -37,7 +38,7 @@ export default function TorneioPage() {
         />
       ))}
 
-      <Torneio torneio={torneio} />
+      <Torneio torneio={torneio} onFinalizar={finalizarTorneio} />
     </div>
   );
 }
