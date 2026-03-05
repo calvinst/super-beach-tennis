@@ -1,7 +1,6 @@
 import { gerarRodadas } from "./geradorDeRodadas";
 
 export function criarTorneio(jogadores, config) {
-  console.log("config no store", config);
   const jogos = gerarRodadas(jogadores, config);
 
   const ranking = {};
@@ -21,7 +20,6 @@ export function criarTorneio(jogadores, config) {
 }
 
 export function registrarResultado(torneio, partidaId, gamesDuplaA, gamesDuplaB) {
-  console.log("torneio", torneio);
   const novoTorneio = {
     ...torneio,
     jogos: torneio.jogos.map((r) => ({
