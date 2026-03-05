@@ -1,10 +1,18 @@
 export function gerarRodadas(jogadores, config, tentativas = 5000) {
   const maxConfrontos = config.qtdJogadores === 12 ? 3 : (config.maxConfrontos || 3);
+  const quadras = config.qtdQuadras || 3;
+
+  console.log("Gerando rodadas com config:", config);
 
   if (config.qtdJogadores === 8) {
     if (jogadores.length !== 8) {
       throw new Error("Super 8 precisa exatamente 8 jogadores.");
     }
+
+    // Super 8: 7 rodadas com 2 partidas cada (independente de quadras,
+    // pois são apenas 8 jogadores — sempre 2 partidas simultâneas no máximo)
+    const PARTIDAS_POR_RODADA = Math.min(quadras, 2);
+    const TOTAL_RODADAS = 7;
 
     function chaveDupla(a, b) {
       return [a.id, b.id].sort((x, y) => x - y).join("-");
@@ -33,12 +41,12 @@ export function gerarRodadas(jogadores, config, tentativas = 5000) {
       const rodadas = [];
       let partidaId = 1;
 
-      for (let r = 0; r < 7; r++) {
+      for (let r = 0; r < TOTAL_RODADAS; r++) {
         const usadosNaRodada = new Set();
         const partidas = [];
 
         function backtrack() {
-          if (partidas.length === 2) return true;
+          if (partidas.length === PARTIDAS_POR_RODADA) return true;
 
           let livres = jogadores.filter((j) => !usadosNaRodada.has(j.id));
           livres = [...livres].sort(() => Math.random() - 0.5);
@@ -68,7 +76,6 @@ export function gerarRodadas(jogadores, config, tentativas = 5000) {
                   const ids = [a.id, b.id, c.id, d.id];
                   if (new Set(ids).size !== 4) continue;
 
-                  // testar confrontos
                   const pares = [
                     [a.id, c.id],
                     [a.id, d.id],
@@ -77,14 +84,12 @@ export function gerarRodadas(jogadores, config, tentativas = 5000) {
                   ];
 
                   let invalido = false;
-
                   for (const [x, y] of pares) {
                     if (confrontos[x][y] >= maxConfrontos) {
                       invalido = true;
                       break;
                     }
                   }
-
                   if (invalido) continue;
 
                   // aplicar
@@ -153,19 +158,24 @@ export function gerarRodadas(jogadores, config, tentativas = 5000) {
       return rodadas;
     }
 
-    // Rodar várias tentativas e pegar a melhor válida
     for (let t = 0; t < tentativas; t++) {
       const solucao = gerarUmaSolucao();
       if (solucao) return solucao;
     }
 
     throw new Error("Não foi possível gerar uma distribuição válida.");
+
   } else if (config.qtdJogadores === 12) {
     if (jogadores.length !== 12) {
       throw new Error("Super 12 precisa exatamente 12 jogadores.");
     }
 
-    const TOTAL_RODADAS = config?.rodadas ?? 11;
+    // Total de partidas sempre 33 (11 rodadas × 3 partidas)
+    // Com 3 quadras: 11 rodadas de 3 partidas
+    // Com 2 quadras: 16 rodadas de 2 partidas + 1 rodada de 1 partida (17 total)
+    const TOTAL_PARTIDAS = 33;
+    const PARTIDAS_POR_RODADA = quadras; // 2 ou 3
+    const TOTAL_RODADAS = quadras === 2 ? 17 : 11;
 
     function chaveDupla(a, b) {
       return [a.id, b.id].sort().join("-");
@@ -191,13 +201,12 @@ export function gerarRodadas(jogadores, config, tentativas = 5000) {
       const { duplasUsadas, parceirosUsados, confrontos } = criarEstruturas();
       const rodadas = [];
       let partidaId = 1;
+      let partidasGeradas = 0;
 
-      // Pontuação de "quão boa" é uma dupla (menos usada = melhor)
       function scoreDupla(a, b) {
         return parceirosUsados[a.id].has(b.id) ? Infinity : 0;
       }
 
-      // Pontuação de "quão bom" é um confronto entre duas duplas (menos confrontos = melhor)
       function scoreConfronto(a, b, c, d) {
         if (confrontos[a.id][c.id] >= maxConfrontos) return Infinity;
         if (confrontos[a.id][d.id] >= maxConfrontos) return Infinity;
@@ -208,10 +217,12 @@ export function gerarRodadas(jogadores, config, tentativas = 5000) {
       }
 
       for (let r = 0; r < TOTAL_RODADAS; r++) {
+        // Última rodada com 2 quadras tem só 1 partida (33 = 16×2 + 1)
+        const partidasDessaRodada = (quadras === 2 && r === 16) ? 1 : PARTIDAS_POR_RODADA;
+
         const usadosNaRodada = new Set();
         const partidas = [];
 
-        // Gera todas as duplas válidas possíveis para essa rodada
         function getDuplasValidas(livres) {
           const duplas = [];
           for (let i = 0; i < livres.length; i++) {
@@ -220,14 +231,14 @@ export function gerarRodadas(jogadores, config, tentativas = 5000) {
               const b = livres[j];
               if (duplasUsadas.has(chaveDupla(a, b))) continue;
               if (scoreDupla(a, b) === Infinity) continue;
-              duplas.push({ a, b, score: Math.random() }); // aleatoriedade controlada
+              duplas.push({ a, b, score: Math.random() });
             }
           }
           return duplas.sort((x, y) => x.score - y.score);
         }
 
         function backtrack() {
-          if (partidas.length === 3) return true;
+          if (partidas.length === partidasDessaRodada) return true;
 
           const livres = jogadores.filter((j) => !usadosNaRodada.has(j.id));
           const duplas = getDuplasValidas(livres);
@@ -236,8 +247,6 @@ export function gerarRodadas(jogadores, config, tentativas = 5000) {
             if (usadosNaRodada.has(a.id) || usadosNaRodada.has(b.id)) continue;
 
             const dupla1Key = chaveDupla(a, b);
-
-            // Gera duplas adversárias ordenadas por score
             const livresRestantes = livres.filter((j) => j.id !== a.id && j.id !== b.id);
 
             const adversarias = [];
@@ -261,7 +270,6 @@ export function gerarRodadas(jogadores, config, tentativas = 5000) {
             for (const { c, d } of adversarias) {
               const dupla2Key = chaveDupla(c, d);
 
-              // Aplicar
               usadosNaRodada.add(a.id);
               usadosNaRodada.add(b.id);
               usadosNaRodada.add(c.id);
@@ -322,6 +330,7 @@ export function gerarRodadas(jogadores, config, tentativas = 5000) {
 
         if (!backtrack()) return null;
 
+        partidasGeradas += partidas.length;
         rodadas.push({ numero: r + 1, partidas });
       }
 

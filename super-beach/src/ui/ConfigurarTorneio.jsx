@@ -3,10 +3,15 @@ import { useState } from "react";
 export default function ConfigurarTorneio({ onConfirmar }) {
   const [qtdJogadores, setQtdJogadores] = useState("");
   const [maxConfrontos, setMaxConfrontos] = useState("");
+  const [qtdQuadras, setQtdQuadras] = useState("");
 
   function handleSubmit(e) {
     e.preventDefault();
-    onConfirmar({ qtdJogadores: Number(qtdJogadores), maxConfrontos: Number(maxConfrontos) });
+    onConfirmar({
+      qtdJogadores: Number(qtdJogadores),
+      maxConfrontos: Number(maxConfrontos),
+      qtdQuadras: Number(qtdQuadras),
+    });
   }
 
   return (
@@ -28,6 +33,20 @@ export default function ConfigurarTorneio({ onConfirmar }) {
                 <option value="">Selecione</option>
                 <option value={8}>8 jogadores</option>
                 <option value={12}>12 jogadores</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="label">Quantidade de quadras</label>
+              <select
+                className="select w-full"
+                value={qtdQuadras}
+                onChange={(e) => setQtdQuadras(e.target.value)}
+                required
+              >
+                <option value="">Selecione</option>
+                <option value={2}>2 quadras</option>
+                <option value={3}>3 quadras</option>
               </select>
             </div>
 

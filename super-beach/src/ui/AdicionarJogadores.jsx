@@ -19,7 +19,7 @@ export default function AdicionarJogadores({ onGerarTorneio, limiteJogadores }) 
 
   return (
     // <div className="flex justify-center mt-10 px-4">
-      <div className="card w-md bg-base-100 shadow-xl border border-gray-200">
+      <div className="card max-w-md bg-base-100 shadow-xl border border-gray-200 w-full">
         <div className="card-body space-y-4">
           <h2 className="card-title justify-center text-xl">Adicionar Jogadores</h2>
 

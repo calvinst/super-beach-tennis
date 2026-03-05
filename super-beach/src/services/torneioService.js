@@ -13,7 +13,7 @@ export function criarTorneio(jogadores, config) {
 
   return {
     jogadores,
-    jogos, // 👈 lista linear
+    jogos, // lista linear
     ranking,
     finalizado: false,
   };
@@ -42,7 +42,7 @@ export function registrarResultado(torneio, partidaId, gamesDuplaA, gamesDuplaB)
 
   if (!partida) return novoTorneio;
 
-  // 🔁 remover games antigos (edição)
+  // remover games antigos (edição)
   if (partida.placar && partida.placar.duplaA !== null) {
     partida.duplaA.jogadores.forEach((j) => {
       novoTorneio.ranking[j.id].games -= partida.placar.duplaA;
@@ -59,7 +59,7 @@ export function registrarResultado(torneio, partidaId, gamesDuplaA, gamesDuplaB)
     duplaB: gamesDuplaB,
   };
 
-  // ➕ somar novos games
+  // somar novos games
   partida.duplaA.jogadores.forEach((j) => {
     novoTorneio.ranking[j.id].games += gamesDuplaA;
   });
@@ -68,7 +68,7 @@ export function registrarResultado(torneio, partidaId, gamesDuplaA, gamesDuplaB)
     novoTorneio.ranking[j.id].games += gamesDuplaB;
   });
 
-  // ⏭️ avançar rodada
+  // avançar rodada
   const rodadaAtual = novoTorneio.jogos.find((r) => r.numero === novoTorneio.rodadaAtual);
 
   if (rodadaAtual && rodadaAtual.partidas.every((p) => p.placar && p.placar.duplaA !== null)) {

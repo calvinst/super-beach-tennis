@@ -12,7 +12,7 @@ function Torneio({ torneio, onFinalizar }) {
   return (
     <div className="space-y-6">
       <button
-        className="btn btn-success"
+        className="btn btn-primary shadow" 
         onClick={() => {
           onFinalizar();
           setIsOpen(true);

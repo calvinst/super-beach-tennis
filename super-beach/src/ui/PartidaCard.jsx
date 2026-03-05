@@ -17,13 +17,13 @@ export default function PartidaCard({ partida, onSalvar }) {
   const podeSalvar = gamesA !== "" && gamesB !== "";
 
   return (
-    <div className="card bg-gray-100 shadow-sm">
+    <div className="card bg-gray-100 shadow-sm max-w-3xl">
       <div className="card-body p-4 space-y-4">
         {/* Duplas */}
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-2 text-center">
+        <div className="flex flex-row justify-between items-center gap-2 text-center">
           <div className="font-semibold">{jogadoresA.map((j) => j.nome).join(" / ")}</div>
 
-          <span className="badge badge-outline">vs</span>
+          <span className="">vs</span>
 
           <div className="font-semibold">{jogadoresB.map((j) => j.nome).join(" / ")}</div>
         </div>

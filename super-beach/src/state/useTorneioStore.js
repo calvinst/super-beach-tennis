@@ -7,13 +7,12 @@ import {
 
 export const useTorneioStore = create((set) => ({
   torneio: null,
-  config: null, // 👈 NOVO
+  config: null,
 
-  setConfig: (config) => set({ config }), // 👈 NOVO
-
+  setConfig: (config) => set({ config }),
   iniciarTorneio: (jogadores) =>
     set((state) => ({
-      torneio: criarTorneio(jogadores, state.config), // 👈 usa config do store
+      torneio: criarTorneio(jogadores, state.config),
     })),
 
   registrarResultado: (partidaId, gamesA, gamesB) =>
@@ -29,6 +28,6 @@ export const useTorneioStore = create((set) => ({
   resetarTorneio: () =>
     set({
       torneio: null,
-      config: null, // 👈 opcional resetar config também
+      config: null,
     }),
 }));
