@@ -8,8 +8,16 @@ import {
 export const useTorneioStore = create((set) => ({
   torneio: null,
   config: null,
+  jogadores: [],
 
   setConfig: (config) => set({ config }),
+  setJogadores: (jogadores) => set({ jogadores }),
+
+  setConfigField: (field, value) =>
+  set((state) => ({
+    config: { ...state.config, [field]: value },
+  })),
+  
   iniciarTorneio: (jogadores) =>
     set((state) => ({
       torneio: criarTorneio(jogadores, state.config),
@@ -29,5 +37,6 @@ export const useTorneioStore = create((set) => ({
     set({
       torneio: null,
       config: null,
+      jogadores: [],
     }),
 }));

@@ -1,17 +1,17 @@
 import { useState } from "react";
+import { useTorneioStore } from "../state/useTorneioStore";
 
 export default function ConfigurarTorneio({ onConfirmar }) {
-  const [qtdJogadores, setQtdJogadores] = useState("");
-  const [maxConfrontos, setMaxConfrontos] = useState("");
-  const [qtdQuadras, setQtdQuadras] = useState("");
+  const config = useTorneioStore((s) => s.config);
+  const setConfigField = useTorneioStore((s) => s.setConfigField);
+
+  const qtdJogadores = config?.qtdJogadores ?? "";
+  const maxConfrontos = config?.maxConfrontos ?? "";
+  const qtdQuadras = config?.qtdQuadras ?? "";
 
   function handleSubmit(e) {
     e.preventDefault();
-    onConfirmar({
-      qtdJogadores: Number(qtdJogadores),
-      maxConfrontos: Number(maxConfrontos),
-      qtdQuadras: Number(qtdQuadras),
-    });
+    onConfirmar(config); // config já está atualizado no store
   }
 
   return (
@@ -27,7 +27,7 @@ export default function ConfigurarTorneio({ onConfirmar }) {
               <select
                 className="select w-full"
                 value={qtdJogadores}
-                onChange={(e) => setQtdJogadores(e.target.value)}
+                onChange={(e) => setConfigField("qtdJogadores", Number(e.target.value))}
                 required
               >
                 <option value="">Selecione</option>
@@ -41,7 +41,7 @@ export default function ConfigurarTorneio({ onConfirmar }) {
               <select
                 className="select w-full"
                 value={qtdQuadras}
-                onChange={(e) => setQtdQuadras(e.target.value)}
+                onChange={(e) => setConfigField("qtdQuadras",   Number(e.target.value))}
                 required
               >
                 <option value="">Selecione</option>
@@ -56,7 +56,7 @@ export default function ConfigurarTorneio({ onConfirmar }) {
               <select
                 className="select w-full"
                 value={maxConfrontos}
-                onChange={(e) => setMaxConfrontos(e.target.value)}
+                onChange={(e) => setConfigField("maxConfrontos", Number(e.target.value))}
               >
                 <option value="">Selecione</option>
                 <option value={2}>Até 2 vezes</option>
