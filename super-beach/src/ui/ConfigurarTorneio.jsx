@@ -64,7 +64,7 @@ export default function ConfigurarTorneio({ onConfirmar }) {
               </select>
             </div>
 
-            <button type="submit" className="btn btn-primary w-full">
+            <button type="submit" className="btn btn-secondary w-full">
               Continuar
             </button>
           </form>
